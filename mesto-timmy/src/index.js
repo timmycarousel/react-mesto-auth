@@ -5,15 +5,18 @@ import App from "./components/App";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import reportWebVitals from "./reportWebVitals";
+import { BrowserRouter } from "react-router-dom";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <div className="html">
-    <div className="page">
-      <Header />
-      <App />
-      <Footer />
+  <BrowserRouter>
+    <div className="html">
+      <div className="page">
+        <Header />
+        <App />
+        <Footer />
+      </div>
     </div>
-  </div>
+  </BrowserRouter>
 );
 reportWebVitals();

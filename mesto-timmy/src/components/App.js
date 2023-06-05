@@ -8,6 +8,7 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
+import { Route, Routes } from "react-router-dom";
 
 //Определение функционального компонента App:
 function App() {
@@ -119,15 +120,23 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="html">
         <div className="page">
-          <Main
-            onEditAvatar={handleEditAvatarClick}
-            onEditProfile={handleEditProfileClick}
-            onAddPlace={handleAddPlaceClick}
-            onCardClick={handleCardClick}
-            onCardDelete={handleCardDelete}
-            onCardLike={handleCardLike}
-            cards={cards}
-          />
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <Main
+                  onEditAvatar={handleEditAvatarClick}
+                  onEditProfile={handleEditProfileClick}
+                  onAddPlace={handleAddPlaceClick}
+                  onCardClick={handleCardClick}
+                  onCardDelete={handleCardDelete}
+                  onCardLike={handleCardLike}
+                  cards={cards}
+                />
+              }
+            />
+          </Routes>
+
           <EditProfilePopup
             isOpen={isEditProfilePopupOpen}
             onClose={closeAllPopups}
