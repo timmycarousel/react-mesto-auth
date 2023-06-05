@@ -108,6 +108,7 @@ function App() {
   }
 
   function closeAllPopups() {
+    console.log("Hello!");
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
