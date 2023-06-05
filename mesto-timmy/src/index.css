@@ -69,3 +69,9 @@
 
 @import url("./blocks/footer/footer.css");
 @import url("./blocks/footer/__copyright/footer__copyright.css");
+
+@import url("./blocks/login/login.css");
+@import url("./blocks/login/__input/login__input.css");
+@import url("./blocks/login/__button/login__button.css");
+@import url("./blocks/login/__form/login__form.css");
+@import url("./blocks/login/__title/login__title.css");

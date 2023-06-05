@@ -10,6 +10,7 @@ import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
 import { Route, Routes } from "react-router-dom";
 import PageNotFound from "./PageNotFound";
+import Login from "./Login";
 
 //Определение функционального компонента App:
 function App() {
@@ -138,6 +139,9 @@ function App() {
             />
 
             <Route path="*" element={<PageNotFound />} />
+
+            <Route path="/sign-up" element={<Login />} />
+            <Route path="/sign-in" element={"Hello"} />
           </Routes>
 
           <EditProfilePopup
