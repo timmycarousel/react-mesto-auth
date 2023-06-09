@@ -219,7 +219,7 @@ function App() {
                 />
               }
             />
-            <Route path="*" element={<PageNotFound />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
             <Route
               path="/sign-up"
               element={
