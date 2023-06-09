@@ -1,42 +1,91 @@
-//Импорт компонентов и библиотек:
-import ImagePopup from "./ImagePopup";
-import PopupWithForm from "./PopupWithForm";
-import Main from "./Main";
-import React from "react";
-import api from "../utils/Api";
+import React, { useState, useEffect } from "react";
+import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import api from "../utils/Api";
+import * as auth from "../utils/auth.js";
+import Main from "./Main";
+import PageNotFound from "./PageNotFound";
+import Register from "./Register";
+import Login from "./Login";
+import ProtectedRoute from "./ProtectedRoute";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
-import { Route, Routes } from "react-router-dom";
-import PageNotFound from "./PageNotFound";
-import Login from "./Login";
+import PopupWithForm from "./PopupWithForm";
+import ImagePopup from "./ImagePopup";
+import InfoTooltip from "./InfoTooltip";
+import ok from "../images/Ok.svg";
+import error from "../images/Error.svg";
+import Header from "./Header";
 
-//Определение функционального компонента App:
 function App() {
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
-    React.useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
-    React.useState(false);
-  const [selectedCard, setSelectedCard] = React.useState(null);
-  const [cards, setCards] = React.useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState({});
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+  const [cards, setCards] = useState([]);
+  const navigate = useNavigate();
 
-  React.useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getCardsFromServer()])
-      .then(([userInfo, initialCards]) => {
-        setCurrentUser(userInfo);
-        setCards(initialCards);
-      })
-      .catch((err) => console.log(`Error: ${err}`));
+  const [isTooltipPopupOpen, setIsTooltipPopupOpen] = useState(false);
+  const [imageTooltip, setImageTooltip] = useState("");
+  const [textTooltip, setTextTooltip] = useState("");
+
+  useEffect(() => {
+    tokenCheck();
   }, []);
 
-  function handleCardLike(card) {
-    // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+  useEffect(() => {
+    if (loggedIn) {
+      // Получение информации о пользователе и карточек с сервера
+      Promise.all([api.getUserInfo(), api.getCardsFromServer()])
+        .then(([userInfo, initialCards]) => {
+          setCurrentUser(userInfo);
+          setCards(initialCards);
+        })
+        .catch((err) => console.log(`Error: ${err}`));
+    }
+  }, [loggedIn]);
 
-    // Отправляем запрос в API и получаем обновлённые данные карточки
+  function handleLogin() {
+    setLoggedIn(true);
+  }
+
+  function tokenCheck() {
+    // Проверка токена в localStorage
+    const token = localStorage.getItem("token");
+    if (token) {
+      auth
+        .getContent(token)
+        .then((res) => {
+          if (res) {
+            setLoggedIn(true);
+          }
+        })
+        .catch((err) => console.log(err));
+    }
+  }
+
+  function handleRegister(password, email) {
+    return auth
+      .register(password, email)
+      .then(() => {
+        setImageTooltip(ok);
+        setTextTooltip("Вы успешно зарегистрированы!");
+        setIsTooltipPopupOpen(true);
+        navigate("/sign-in");
+      })
+      .catch(() => {
+        setImageTooltip(error);
+        setTextTooltip("Ошибка регистрации! Попробуйте ещё раз.");
+        setIsTooltipPopupOpen(true);
+      });
+  }
+
+  function handleCardLike(card) {
+    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    // Изменение статуса лайка карточки через API
     api
       .changeLikeCardStatus(card._id, !isLiked)
       .then((newCard) => {
@@ -48,6 +97,7 @@ function App() {
   }
 
   function handleCardDelete(card) {
+    // Удаление карточки через API
     api
       .deleteCard(card._id)
       .then(() => {
@@ -59,6 +109,7 @@ function App() {
   }
 
   function changeAvatar(link) {
+    // Обновление аватара пользователя через API
     api
       .sendAvatarData(link)
       .then((res) => {
@@ -71,6 +122,7 @@ function App() {
   }
 
   function handleAddPlaceSubmit(newCard) {
+    // Добавление новой карточки через API
     api
       .addCard(newCard)
       .then((newCard) => {
@@ -83,6 +135,7 @@ function App() {
   }
 
   function handleUpdateUser(data) {
+    // Обновление информации о пользователе через API
     api
       .setUserInfo(data)
       .then((data) => {
@@ -95,38 +148,45 @@ function App() {
   }
 
   function handleEditAvatarClick() {
+    // Обработчик открытия попапа изменения аватара
     setIsEditAvatarPopupOpen(true);
   }
 
   function handleEditProfileClick() {
+    // Обработчик открытия попапа редактирования профиля
     setIsEditProfilePopupOpen(true);
   }
 
   function handleAddPlaceClick() {
+    // Обработчик открытия попапа добавления новой карточки
     setIsAddPlacePopupOpen(true);
   }
 
   function handleCardClick(card) {
+    // Обработчик открытия попапа с увеличенным изображением карточки
     setSelectedCard(card);
   }
 
   function closeAllPopups() {
-    console.log("Hello!");
+    // Закрытие всех попапов
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
     setSelectedCard(null);
+    setIsTooltipPopupOpen(false);
   }
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="html">
         <div className="page">
+          <Header />
           <Routes>
             <Route
               path="/"
               element={
-                <Main
+                <ProtectedRoute
+                  element={Main}
                   onEditAvatar={handleEditAvatarClick}
                   onEditProfile={handleEditProfileClick}
                   onAddPlace={handleAddPlaceClick}
@@ -134,14 +194,31 @@ function App() {
                   onCardDelete={handleCardDelete}
                   onCardLike={handleCardLike}
                   cards={cards}
+                  loggedIn={loggedIn}
                 />
               }
             />
-
             <Route path="*" element={<PageNotFound />} />
-
-            <Route path="/sign-up" element={<Login />} />
-            <Route path="/sign-in" element={"Hello"} />
+            <Route
+              path="/sign-up"
+              element={
+                loggedIn ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <Register handleRegister={handleRegister} />
+                )
+              }
+            />
+            <Route
+              path="/sign-in"
+              element={
+                loggedIn ? (
+                  <Navigate to="/" replace />
+                ) : (
+                  <Login handleLogin={handleLogin} />
+                )
+              }
+            />
           </Routes>
 
           <EditProfilePopup
@@ -167,6 +244,12 @@ function App() {
             onUpdateAvatar={changeAvatar}
           />
           <ImagePopup card={selectedCard} onClose={closeAllPopups}></ImagePopup>
+          <InfoTooltip
+            onClose={closeAllPopups}
+            text={textTooltip}
+            image={imageTooltip}
+            isOpen={isTooltipPopupOpen}
+          />
         </div>
       </div>
     </CurrentUserContext.Provider>

@@ -17,13 +17,13 @@
 }
 
 @media screen and (max-width: 879px) {
-  .popup__container_type_form {
+  .popup__container_type_delete {
     width: 90%;
   }
 }
 
 @media screen and (max-width: 320px) {
-  .popup__container_type_form {
+  .popup__container_type_delete {
     width: 282px;
     -ms-flex-pack: distribute;
     justify-content: space-around;

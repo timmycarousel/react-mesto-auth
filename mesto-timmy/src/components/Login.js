@@ -1,20 +1,37 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import * as auth from "../utils/auth.js";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const Login = ({ handleLogin }) => {
+  const [formValue, setFormValue] = useState({
+    email: "",
+    password: "",
+  });
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setFormValue({
+      ...formValue,
+      [name]: value,
+    });
+  }
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
+  const { password, email } = formValue;
+
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Дополнительная логика для отправки данных формы на сервер
+
+    auth.authorize(password, email).then((data) => {
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        handleLogin();
+        navigate("/");
+      }
+    });
   };
 
   return (
@@ -25,15 +42,17 @@ const Login = () => {
           type="email"
           className="login__input"
           placeholder="Email"
+          name="email"
           value={email}
-          onChange={handleEmailChange}
+          onChange={handleChange}
         />
         <input
           type="password"
           className="login__input"
           placeholder="Пароль"
           value={password}
-          onChange={handlePasswordChange}
+          name="password"
+          onChange={handleChange}
         />
         <button type="submit" className="login__button">
           Войти
