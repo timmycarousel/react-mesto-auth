@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import * as auth from "../utils/auth.js";
 
 const Login = ({ handleLogin }) => {
   // Используем хук useState для хранения состояния формы
