@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 const Register = ({ handleRegister }) => {
+  // Используем хук useState для хранения состояния формы
   const [formValue, setFormValue] = useState({
     password: "",
     email: "",
@@ -9,17 +10,20 @@ const Register = ({ handleRegister }) => {
 
   const { password, email } = formValue;
 
+  // Обработчик изменения значений полей ввода
   function handleChange(e) {
     const { name, value } = e.target;
+    // Обновляем состояние формы с новыми значениями
     setFormValue({
       ...formValue,
       [name]: value,
     });
   }
 
+  // Обработчик отправки формы
   function handleSubmit(e) {
     e.preventDefault();
-
+    // Вызываем обработчик handleRegister с введенными данными
     handleRegister(password, email);
   }
 
@@ -45,7 +49,7 @@ const Register = ({ handleRegister }) => {
           placeholder="Пароль"
           required
         />
-        <button type="submit" className="register__button">
+        <button type="submit" className="register__button button">
           Зарегистрироваться
         </button>
       </form>

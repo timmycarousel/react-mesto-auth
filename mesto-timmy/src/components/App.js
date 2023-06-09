@@ -31,6 +31,7 @@ function App() {
   const [isTooltipPopupOpen, setIsTooltipPopupOpen] = useState(false);
   const [imageTooltip, setImageTooltip] = useState("");
   const [textTooltip, setTextTooltip] = useState("");
+  const [emailUser, setEmailUser] = useState("");
 
   useEffect(() => {
     tokenCheck();
@@ -48,10 +49,6 @@ function App() {
     }
   }, [loggedIn]);
 
-  function handleLogin() {
-    setLoggedIn(true);
-  }
-
   function tokenCheck() {
     // Проверка токена в localStorage
     const token = localStorage.getItem("token");
@@ -61,6 +58,7 @@ function App() {
         .then((res) => {
           if (res) {
             setLoggedIn(true);
+            setEmailUser(res.data.email);
           }
         })
         .catch((err) => console.log(err));
@@ -68,19 +66,38 @@ function App() {
   }
 
   function handleRegister(password, email) {
+    if (password || email) {
+      return auth
+        .register(password, email)
+        .then(() => {
+          setImageTooltip(ok);
+          setTextTooltip("Вы успешно зарегистрированы!");
+          setIsTooltipPopupOpen(true);
+          navigate("/sign-in");
+        })
+        .catch(() => {
+          setImageTooltip(error);
+          setTextTooltip("Ошибка регистрации! Попробуйте ещё раз.");
+          setIsTooltipPopupOpen(true);
+        });
+    }
+  }
+
+  function handleLogin(password, email) {
+    if (!password || !email) {
+      return;
+    }
     return auth
-      .register(password, email)
-      .then(() => {
-        setImageTooltip(ok);
-        setTextTooltip("Вы успешно зарегистрированы!");
-        setIsTooltipPopupOpen(true);
-        navigate("/sign-in");
+      .authorize(password, email)
+      .then((data) => {
+        if (data.token) {
+          localStorage.setItem("token", data.token);
+          navigate("/");
+          setEmailUser(email);
+          setLoggedIn(true);
+        }
       })
-      .catch(() => {
-        setImageTooltip(error);
-        setTextTooltip("Ошибка регистрации! Попробуйте ещё раз.");
-        setIsTooltipPopupOpen(true);
-      });
+      .catch((err) => console.log(err));
   }
 
   function handleCardLike(card) {
@@ -180,7 +197,11 @@ function App() {
     <CurrentUserContext.Provider value={currentUser}>
       <div className="html">
         <div className="page">
-          <Header />
+          <Header
+            email={emailUser}
+            loggedIn={loggedIn}
+            setLoggedIn={setLoggedIn}
+          />
           <Routes>
             <Route
               path="/"

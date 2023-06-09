@@ -3,35 +3,29 @@ import { useNavigate } from "react-router-dom";
 import * as auth from "../utils/auth.js";
 
 const Login = ({ handleLogin }) => {
+  // Используем хук useState для хранения состояния формы
   const [formValue, setFormValue] = useState({
     email: "",
     password: "",
   });
 
+  const { password, email } = formValue;
+
+  // Обработчик изменения значений полей ввода
   function handleChange(e) {
     const { name, value } = e.target;
+    // Обновляем состояние формы с новыми значениями
     setFormValue({
       ...formValue,
       [name]: value,
     });
   }
 
-  const { password, email } = formValue;
-
-  const [errorMessage, setErrorMessage] = useState("");
-
-  const navigate = useNavigate();
-
+  // Обработчик отправки формы
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    auth.authorize(password, email).then((data) => {
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-        handleLogin();
-        navigate("/");
-      }
-    });
+    // Вызываем обработчик handleLogin с введенными данными
+    handleLogin(password, email);
   };
 
   return (
@@ -54,7 +48,7 @@ const Login = ({ handleLogin }) => {
           name="password"
           onChange={handleChange}
         />
-        <button type="submit" className="login__button">
+        <button type="submit" className="login__button button">
           Войти
         </button>
       </form>

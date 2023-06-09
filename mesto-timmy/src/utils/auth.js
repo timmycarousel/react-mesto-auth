@@ -1,5 +1,6 @@
 export const BASE_URL = "https://auth.nomoreparties.co";
 
+// Проверка ответа от сервера
 const checkResponse = (response) => {
   if (response.ok) {
     return response.json();
@@ -7,6 +8,7 @@ const checkResponse = (response) => {
   return Promise.reject(`Ошибка ${response.status}`);
 };
 
+// Регистрация пользователя
 export const register = (password, email) => {
   return fetch(`${BASE_URL}/signup`, {
     method: "POST",
@@ -18,6 +20,7 @@ export const register = (password, email) => {
   }).then(checkResponse);
 };
 
+// Авторизация пользователя
 export const authorize = (password, email) => {
   return fetch(`${BASE_URL}/signin`, {
     method: "POST",
@@ -29,6 +32,7 @@ export const authorize = (password, email) => {
   }).then(checkResponse);
 };
 
+// Получение контента пользователя
 export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
     method: "GET",

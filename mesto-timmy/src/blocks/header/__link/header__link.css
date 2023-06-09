@@ -1,0 +1,23 @@
+.header__link {
+  padding: 0;
+  border: none;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 18px;
+  line-height: 22px;
+  color: inherit;
+  background-color: inherit;
+  cursor: pointer;
+  max-height: 22px;
+  min-width: 42px;
+}
+
+@media (min-width: 880px) {
+  .header__link {
+    order: 0;
+  }
+
+  .header__link:hover {
+    opacity: 0.6;
+  }
+}
