@@ -32,7 +32,7 @@ export const authorize = (password, email) => {
   }).then(checkResponse);
 };
 
-// Получение контента пользователя
+// Получение пользовательского контента
 export const getContent = (token) => {
   return fetch(`${BASE_URL}/users/me`, {
     method: "GET",
